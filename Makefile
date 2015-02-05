@@ -3,9 +3,11 @@ OFILES:=stack.o test.o
 HFILES:=stack.h
 EXECUTABLE:=SimpleStack
 
+CC=clang
+
 .phony: all
 all: $(OFILES) $(HFILES)
-	gcc -o $(EXECUTABLE) $(OFILES)
+	$(CC) -o $(EXECUTABLE) $(OFILES)
 
 clean:
 	rm -fv $(OFILES) $(EXECUTABLE)
