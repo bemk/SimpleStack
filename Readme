@@ -1,0 +1,14 @@
+SIMPLE STACK
+
+A stack implementation, written in C. This stack was designed to be as simple
+as possible, whilst still being reusable.
+
+The project is licensed under the 3 clause BSD license.
+
+Feel free to use this in your own projects.
+
+By the way, if you don't use multiple threads, or work on an architecture
+without preemptive scheduling, it would be possible to remove the
+#define MULTITHREAD line from the stack.h file, which removes thread safety and
+thereby speeds up execution.
+
