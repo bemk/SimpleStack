@@ -45,19 +45,20 @@ struct stack* init_stack(void* root_node)
                 return stack;
         }
 
-        memset((void*) stack, 0, sizeof(*stack));
+        stack->root = malloc(sizeof(*(stack->root)));
+        if (stack->root == NULL) {
+                free(stack);
+                return NULL;
+        }
+        stack->top = stack->root;
+        stack->top->data = root_node;
+
+        stack->depth = 1;
 
 #ifdef MULTITHREAD
         pthread_mutex_init(&stack->mutex, NULL);
         pthread_mutex_unlock(&stack->mutex);
 #endif
-
-        stack->root = malloc(sizeof(*(stack->root)));
-        stack->top = stack->root;
-        memset((void*) stack->top, 0, sizeof(*(stack->top)));
-        stack->top->data = root_node;
-
-        stack->depth = 1;
 
         return stack;
 }
@@ -71,21 +72,19 @@ int16_t push_node(struct stack* stack, void* data)
                 return STACK_ILLEGAL_STACK;
         }
 
+        struct stack_node* node = malloc(sizeof(*node));
+        if (node == NULL) {
+                return STACK_NO_MEMORY;
+        }
+
+        node->data = data;
+
 #ifdef MULTITHREAD
         pthread_mutex_lock(&stack->mutex);
 #endif
-        struct stack_node* node = malloc(sizeof(*node));
-        if (node == NULL)
-                goto cleanup;
-
         stack->depth++;
-        memset((void*) node, 0, sizeof(*node));
-
-        node->data = data;
         node->next = stack->top;
         stack->top = node;
-
-        cleanup:
 #ifdef MULTITHREAD
         pthread_mutex_unlock(&stack->mutex);
 #endif
@@ -108,13 +107,12 @@ void* pop_node(struct stack* stack)
 
         struct stack_node* top = stack->top;
         stack->top = top->next;
-        memset(top, 0, sizeof(*top));
-
-        free(top);
 
 #ifdef MULTITHREAD
         pthread_mutex_unlock(&stack->mutex);
 #endif
+
+        free(top);
 
         return ret;
 }
@@ -163,6 +161,7 @@ void trace_stack(struct stack* stack, void (*fn)(void* data))
         if (stack == NULL || fn == NULL) {
                 return;
         }
+
 #ifdef MULTITHREAD
         pthread_mutex_lock(&stack->mutex);
 #endif

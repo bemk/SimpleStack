@@ -1,13 +1,16 @@
-
 OFILES:=stack.o test.o
 HFILES:=stack.h
 EXECUTABLE:=SimpleStack
 
 CC=clang
+LD=clang
 
-.phony: all
-all: $(OFILES) $(HFILES)
-	$(CC) -o $(EXECUTABLE) $(OFILES)
+.phony: all clean
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OFILES) $(HFILES)
+	$(LD) -o $@ $(OFILES)
 
 clean:
 	rm -fv $(OFILES) $(EXECUTABLE)
+
